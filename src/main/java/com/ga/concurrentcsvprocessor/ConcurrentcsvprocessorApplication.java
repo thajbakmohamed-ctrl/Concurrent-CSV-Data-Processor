@@ -49,6 +49,8 @@ public class ConcurrentcsvprocessorApplication {
 
 				System.out.println("Processed employees: " + results.size());
 
+				System.out.println("Atomic Counter: " + collector.getProcessedCount());
+
 				if (results.size() == employees.size()) {
 					System.out.println("All employee salaries calculated successfully");
 				} else {

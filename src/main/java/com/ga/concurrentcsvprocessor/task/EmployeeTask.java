@@ -44,6 +44,9 @@ public class EmployeeTask implements Runnable {
             Thread.currentThread().interrupt();
             System.out.println("Employee processing interrupted: "
                     + employee.getName());
+        } catch (RuntimeException e) {
+            System.out.println("Error processing employee "
+                    + employee.getName() + ": " + e.getMessage());
 
         } finally {
             if (acquired) {
