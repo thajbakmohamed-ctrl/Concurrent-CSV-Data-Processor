@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.IOException;
 import java.util.List;
+import com.ga.concurrentcsvprocessor.calculator.SalaryCalculator;
+import java.math.BigDecimal;
 
 @SpringBootApplication
 public class ConcurrentcsvprocessorApplication {
@@ -16,13 +18,16 @@ public class ConcurrentcsvprocessorApplication {
 
 		CSVReader reader = new CSVReader();
 
-		List<Employee> employees = reader.readCSV(
-				"src/main/resources/employees.csv"
-		);
+		List<Employee> employees = reader.readCSV("src/main/resources/test_employees.csv");
+
+		SalaryCalculator calculator = new SalaryCalculator();
 		System.out.println("Total employees: " + employees.size());
 
 		for (Employee employee : employees) {
-			System.out.println(employee.getName() + " - " + employee.getSalary());
+			BigDecimal newSalary = calculator.calculateEmployeeSalary(employee);
+			System.out.println(employee.getName()
+					+ " | Old Salary: " + employee.getSalary()
+					+ " | New Salary: " + newSalary);
 		}
 	}
 

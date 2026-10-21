@@ -5,21 +5,30 @@ import java.time.LocalDate;
 
 public class Employee {
 
+    private int employeeId;
     private String name;
     private BigDecimal salary;
     private LocalDate joinedDate;
     private String role;
     private double completedProjectsPercentage;
 
-    public Employee(String name, BigDecimal salary, LocalDate joinedDate, String role,
+    public Employee(int employeeId, String name, BigDecimal salary,
+                    LocalDate joinedDate, String role,
                     double completedProjectsPercentage) {
 
+        this.employeeId = employeeId;
         this.name = name;
         this.salary = salary;
         this.joinedDate = joinedDate;
         this.role = role;
         this.completedProjectsPercentage = completedProjectsPercentage;
+    }
+    public int getEmployeeId() {
+        return employeeId;
+    }
 
+    public void setEmployeeId(int employeeId) {
+        this.employeeId = employeeId;
     }
 
     public String getName() {

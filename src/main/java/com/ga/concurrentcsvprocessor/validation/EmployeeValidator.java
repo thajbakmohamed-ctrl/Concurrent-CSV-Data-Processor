@@ -10,9 +10,11 @@ public class EmployeeValidator {
         }
     }
     public void validateCompletedProjects(double percentage) {
-        //check if percentage is not a number or outside 0 to 100
-        if (percentage != percentage || percentage < 0 || percentage > 100) {
-            throw new IllegalArgumentException("Completed projects percentage must be between 0 and 100");
+        //check if percentage is NOT A NUMBER or outside the range 0 to 1
+        if (percentage != percentage || percentage < 0 || percentage > 1) {
+            throw new IllegalArgumentException(
+                    "Completed projects percentage must be between 0 and 1"
+            );
         }
     }
     public void validateRole(String role) {

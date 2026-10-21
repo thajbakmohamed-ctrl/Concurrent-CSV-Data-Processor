@@ -14,14 +14,10 @@ public class CSVReader {
         List<Employee> employees = new ArrayList<>();
         Scanner scanner = new Scanner(new File(filePath));
         try {
-            //skip the header
-            if (scanner.hasNextLine()) {
-                scanner.nextLine();
-            }
 
             EmployeeDataConverter converter = new EmployeeDataConverter();
-            //count CSV lines
-            int lineNumber = 1;
+
+            int lineNumber = 0;
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 lineNumber++;
