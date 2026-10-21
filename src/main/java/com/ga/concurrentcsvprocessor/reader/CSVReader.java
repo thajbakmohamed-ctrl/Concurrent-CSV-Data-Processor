@@ -1,31 +1,43 @@
 package com.ga.concurrentcsvprocessor.reader;
 
+import com.ga.concurrentcsvprocessor.model.Employee;
+
 import java.io.File;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Scanner;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CSVReader {
 
-    public void readCSV(String filePath) throws IOException {
+    public List<Employee> readCSV(String filePath) throws IOException {
+        List<Employee> employees = new ArrayList<>();
         Scanner scanner = new Scanner(new File(filePath));
+        try {
+            //skip the header
+            if (scanner.hasNextLine()) {
+                scanner.nextLine();
+            }
 
-        //skip the header
-        if (scanner.hasNextLine()) {
-            scanner.nextLine();
+            EmployeeDataConverter converter = new EmployeeDataConverter();
+            //count CSV lines
+            int lineNumber = 1;
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                lineNumber++;
+
+                try {
+                    Employee employee = converter.convertToEmployee(line);
+                    employees.add(employee);
+
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Invalid data at line " + lineNumber
+                            + ": " + e.getMessage());
+                }
+            }
+        } finally {
+            scanner.close();
         }
-
-        //read employee records
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            String[] data = line.split(",");
-            System.out.println(data[0]);
-            BigDecimal salary = new BigDecimal(data[1]);
-            LocalDate joinedDate = LocalDate.parse(data[2]);
-            double completedProjectsPercentage = Double.parseDouble(data[4]);
+            return employees;
         }
-
-        scanner.close();
     }
-}
