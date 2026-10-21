@@ -8,7 +8,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.IOException;
 import java.util.List;
 import com.ga.concurrentcsvprocessor.calculator.SalaryCalculator;
-import java.math.BigDecimal;
+import com.ga.concurrentcsvprocessor.task.EmployeeTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import com.ga.concurrentcsvprocessor.collector.ResultCollector;
+import com.ga.concurrentcsvprocessor.model.EmployeeResult;
+import java.util.concurrent.Semaphore;
 
 @SpringBootApplication
 public class ConcurrentcsvprocessorApplication {
@@ -21,13 +27,41 @@ public class ConcurrentcsvprocessorApplication {
 		List<Employee> employees = reader.readCSV("src/main/resources/test_employees.csv");
 
 		SalaryCalculator calculator = new SalaryCalculator();
+
+		ResultCollector collector = new ResultCollector();
+
+		Semaphore semaphore = new Semaphore(2);
+		ExecutorService executor = Executors.newFixedThreadPool(4);
 		System.out.println("Total employees: " + employees.size());
 
 		for (Employee employee : employees) {
-			BigDecimal newSalary = calculator.calculateEmployeeSalary(employee);
-			System.out.println(employee.getName()
-					+ " | Old Salary: " + employee.getSalary()
-					+ " | New Salary: " + newSalary);
+			EmployeeTask task = new EmployeeTask(employee, calculator, collector, semaphore);
+			executor.submit(task);
+		}
+		//stop accepting new tasks
+		executor.shutdown();
+		//wait for all employee tasks to finish
+		try {
+			boolean finished = executor.awaitTermination(1, TimeUnit.MINUTES);
+
+			if (finished) {
+				List<EmployeeResult> results = collector.getResults();
+
+				System.out.println("Processed employees: " + results.size());
+
+				if (results.size() == employees.size()) {
+					System.out.println("All employee salaries calculated successfully");
+				} else {
+					System.out.println("Some employee results are missing");
+				}
+
+			} else {
+				System.out.println("Some employee tasks are still running");
+			}
+
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			System.out.println("Thread processing was interrupted");
 		}
 	}
 
